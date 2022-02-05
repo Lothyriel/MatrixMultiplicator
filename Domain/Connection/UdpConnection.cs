@@ -1,10 +1,13 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace Domain
+namespace Domain.Connection
 {
     public class UdpConnection
     {
+        public IPEndPoint RemoteEndPoint { get; }
+        public UdpClient Client { get; }
+
         public UdpConnection(string ipAddress, int port)
         {
             var multiCastIP = IPAddress.Parse(ipAddress);
@@ -15,10 +18,9 @@ namespace Domain
             Client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             Client.ExclusiveAddressUse = false;
             Client.Client.Bind(new IPEndPoint(IPAddress.Any, port));
+            Client.MulticastLoopback = true;
+            Client.JoinMulticastGroup(multiCastIP, IPAddress.Any);
         }
-        private IPEndPoint RemoteEndPoint { get; }
-        private UdpClient Client { get; }
-
         public void Send(byte[] buffer)
         {
             Client.Send(buffer, buffer.Length, RemoteEndPoint);

@@ -1,8 +1,10 @@
-﻿namespace Domain
+﻿using Domain.Matrices;
+
+namespace Domain.MatrixMultiplication
 {
-    public class MatrixMultiplicator
+    public class LocalMultiplicator
     {
-        public MatrixMultiplicator(Matrix matrixA, Matrix matrixB)
+        public LocalMultiplicator(Matrix matrixA, Matrix matrixB)
         {
             MatrixA = matrixA;
             MatrixB = matrixB;
@@ -17,7 +19,7 @@
             var resultMatrix = new List<List<double>>(MatrixA.X);
             for (int i = 0; i < MatrixA.X; i++)
             {
-                resultMatrix[i] = GetResultLine(i);
+                resultMatrix.Add(GetResultLine(i));
             }
             return new Matrix(resultMatrix);
         }
@@ -25,29 +27,27 @@
         {
             var resultMatrix = new List<List<double>>(MatrixA.X);
             int i = 0;
-            Parallel.For(i, MatrixA.X, (i) => resultMatrix[i] = GetResultLine(i));
+            Parallel.For(i, MatrixA.X, (i) => resultMatrix.Add(GetResultLine(i)));
             return new Matrix(resultMatrix);
         }
-
         private List<double> GetResultLine(int i)
         {
             var resultLine = new List<double>(MatrixB.Y);
-            var linha = MatrixA.DoubleMatrix[i];
+            var line = MatrixA.DoubleMatrix[i];
 
             for (int x = 0; x < MatrixB.Y; x++)
             {
                 double result = 0;
                 for (int y = 0; y < MatrixA.X; y++)
                 {
-                    var numeroLinhaA = linha[y];
-                    var numeroColunaB = MatrixB.DoubleMatrix[y][x];
-                    result += numeroLinhaA * numeroColunaB;
+                    var numberLineA = line[y];
+                    var numberColumnB = MatrixB.DoubleMatrix[y][x];
+                    result += numberLineA * numberColumnB;
                 }
                 resultLine.Add(result);
             }
             return resultLine;
         }
-
         private void Assert()
         {
             if (!(MatrixA.Y == MatrixB.X))

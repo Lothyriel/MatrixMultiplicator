@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Domain.Exceptions;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Domain
+namespace Domain.Matrices
 {
     public class MatrixReader
     {
@@ -13,7 +9,7 @@ namespace Domain
         public MatrixReader(string path)
         {
             Matrix = Resolve(path);
-            Assert();
+            Assert(Matrix);
         }
 
         public Matrix Build()
@@ -21,13 +17,13 @@ namespace Domain
             return new Matrix(Matrix);
         }
 
-        private void Assert()
+        public static void Assert(List<List<double>> Matrix)
         {
             if (Matrix.Any(line => line.Count != Matrix[0].Count))
-                throw new Exception("Invalid Matrix, lines don't have the same number of elements");
+                throw new InvalidMatrix();
         }
 
-        private List<List<double>> Resolve(string path)
+        private static List<List<double>> Resolve(string path)
         {
             var matrix = new List<List<double>>();
             using var reader = File.OpenText(path);
