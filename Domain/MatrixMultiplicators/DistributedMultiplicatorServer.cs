@@ -12,13 +12,16 @@ namespace Domain.MatrixMultiplicators
             MatrixConnection = matrixConnection;
             IPs = ips;
             Result = new double[matrixA.X, matrixB.Y];
-            AlreadySentData = new();
+            AlreadySentLines = new();
+            AlreadySentColumns = new();
         }
 
         public Matrix MatrixA { get; }
         public Matrix MatrixB { get; }
         public double[,] Result { get; }
-        public Dictionary<(int, int), HashSet<string>> AlreadySentData { get; }
+        public Dictionary<int, HashSet<string>> AlreadySentLines { get; }
+        public Dictionary<int, HashSet<string>> AlreadySentColumns { get; }
+
         public MatrixConnection MatrixConnection { get; }
         public List<string> IPs { get; }
 
@@ -60,15 +63,25 @@ namespace Domain.MatrixMultiplicators
         {
             List<double>? line = null;
             List<double>? column = null;
-            if (!AlreadySentData.TryGetValue((x, y), out var clients) || !clients.TryGetValue(ip, out _))
+
+            if (!AlreadySentLines.TryGetValue(x, out var clientsLine) || !clientsLine.TryGetValue(ip, out _))
             {
-                clients ??= new();
+                clientsLine ??= new();
 
                 line = MatrixA.DoubleMatrix[x];
+
+                AlreadySentLines[x] = clientsLine.AddAndReturn(ip);
+            }
+
+            if (!AlreadySentLines.TryGetValue(x, out var clientsColumns) || !clientsLine.TryGetValue(ip, out _))
+            {
+                clientsColumns ??= new();
+
                 column = MatrixB.GetColumn(y);
 
-                AlreadySentData[(x, y)] = clients.AddAndReturn(ip);
+                AlreadySentColumns[y] = clientsColumns.AddAndReturn(ip);
             }
+
             MatrixConnection.Send(new MultiplicationRequest(line, x, column, y), ip);
         }
     }
