@@ -1,5 +1,4 @@
-﻿using Domain;
-using Domain.Matrices;
+﻿using Domain.Matrices;
 using Domain.MatrixMultiplication;
 using FluentAssertions;
 using NUnit.Framework;

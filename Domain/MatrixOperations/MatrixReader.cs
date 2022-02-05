@@ -36,7 +36,7 @@ namespace Domain.Matrices
                     line.Add(double.Parse(strNumber, CultureInfo.InvariantCulture));
                 }
                 matrix.Add(line);
-            } 
+            }
             return matrix;
         }
     }

@@ -2,9 +2,9 @@
 
 namespace Domain.MatrixMultiplication
 {
-    public class DistributedMultiplicatorClient
+    public class DistributedMultiplicatorSlave
     {
-        public DistributedMultiplicatorClient()
+        public DistributedMultiplicatorSlave()
         {
             MatrixA = new();
             MatrixB = new();

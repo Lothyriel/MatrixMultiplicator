@@ -1,5 +1,4 @@
-﻿using Domain;
-using Domain.MatrixMultiplication;
+﻿using Domain.MatrixMultiplication;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ namespace Tests
         [Test]
         public void ShouldMultiplyLineByColumnNullValue()
         {
-            var distributedMultiplicator = new DistributedMultiplicatorClient();
+            var distributedMultiplicator = new DistributedMultiplicatorSlave();
             distributedMultiplicator.MatrixA.DoubleMatrix.Add(new List<double> { 3, 2 });
             distributedMultiplicator.MatrixB.DoubleMatrix.Add(new List<double> { 6 });
             distributedMultiplicator.MatrixB.DoubleMatrix.Add(new List<double> { 0 });
@@ -31,7 +30,7 @@ namespace Tests
 
             var expectedResult = 18;
 
-            var distributedMultiplicator = new DistributedMultiplicatorClient();
+            var distributedMultiplicator = new DistributedMultiplicatorSlave();
 
             var lineResult = distributedMultiplicator.MultiplyLineByColumn(line, 0, column, 0);
 

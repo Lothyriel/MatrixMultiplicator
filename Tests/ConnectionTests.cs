@@ -1,4 +1,7 @@
-﻿using Domain.Connection;
+﻿using Domain.Application;
+using Domain.Connection;
+using Domain.ExtensionMethods;
+using Domain.MatrixMultiplicators;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -17,7 +20,25 @@ namespace Tests
 
             var data = Encoding.UTF8.GetString(serialized);
 
-            ClientConnection.Desserialize(data).Should().Be(toSend);
+            data.Desserialize<MultiplicationRequest>().Should().Be(toSend);
+        }
+        [Test]
+        public void ShouldMultiplyMatricesUsingLocalSockets()
+        {
+            var matrixA = TDD.GetMatrixA();
+            var matrixB = TDD.GetMatrixB();
+
+            var ip = "192.168.10.1";
+            var master = new Master(ip);
+            master.IPs.Add(ip);
+            var multiplicator = new DistributedMultiplicatorMaster(matrixA, matrixB, master);
+            master.Multiplicator = multiplicator;
+
+            master.StartReceivingLoop();
+            master.Start();
+
+            var slave = new Slave(ip);
+            slave.Start();
         }
     }
 }

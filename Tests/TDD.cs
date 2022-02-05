@@ -7,31 +7,16 @@ using System.Collections.Generic;
 
 namespace Tests
 {
-    public class Tdd
+    public class TDD
     {
         [Test]
         public void ShouldMultiplyMatrices()
         {
-            var matrixListA = new List<List<double>>()
-            {
-                new List<double>() { 3,2},
-                new List<double>() { 5,-1},
-            };
-            var matrixA = new Matrix(matrixListA);
+            var matrixA = GetMatrixA();
 
-            var matrixListB = new List<List<double>>()
-            {
-                new List<double>() { 6,4,-2},
-                new List<double>() { 0,7,1},
-            };
-            var matrixB = new Matrix(matrixListB);
+            var matrixB = GetMatrixB();
 
-            var expectedmatrixListResult = new List<List<double>>()
-            {
-                new List<double>() { 18,26,-4},
-                new List<double>() { 30,13,-11},
-            };
-            var expectedMatrixResult = new Matrix(expectedmatrixListResult);
+            var expectedMatrixResult = GetResultMatrix();
 
             var resultMatrix = new LocalMultiplicator(matrixA, matrixB).MultiplySingleThreaded();
 
@@ -55,6 +40,37 @@ namespace Tests
 
             var transform = () => MatrixReader.Assert(matrixList);
             transform.Should().Throw<InvalidMatrix>();
+        }
+
+        public static Matrix GetResultMatrix()
+        {
+            var expectedmatrixListResult = new List<List<double>>()
+            {
+                new List<double>() { 18,26,-4},
+                new List<double>() { 30,13,-11},
+            };
+            var expectedMatrixResult = new Matrix(expectedmatrixListResult);
+            return expectedMatrixResult;
+        }
+
+        public static Matrix GetMatrixB()
+        {
+            var matrixListB = new List<List<double>>()
+            {
+                new List<double>() { 6,4,-2},
+                new List<double>() { 0,7,1},
+            };
+            return new Matrix(matrixListB);
+        }
+
+        public static Matrix GetMatrixA()
+        {
+            var matrixListA = new List<List<double>>()
+            {
+                new List<double>() { 3,2},
+                new List<double>() { 5,-1},
+            };
+            return new Matrix(matrixListA);
         }
     }
 }

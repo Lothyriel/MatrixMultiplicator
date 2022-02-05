@@ -1,7 +1,7 @@
 ﻿using Domain.Exceptions;
 using Newtonsoft.Json;
 
-namespace Domain
+namespace Domain.ExtensionMethods
 {
     public static class Extensions
     {

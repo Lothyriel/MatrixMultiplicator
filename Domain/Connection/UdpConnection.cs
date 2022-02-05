@@ -18,8 +18,6 @@ namespace Domain.Connection
             Client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             Client.ExclusiveAddressUse = false;
             Client.Client.Bind(new IPEndPoint(IPAddress.Any, port));
-            Client.MulticastLoopback = true;
-            Client.JoinMulticastGroup(multiCastIP, IPAddress.Any);
         }
         public void Send(byte[] buffer)
         {
