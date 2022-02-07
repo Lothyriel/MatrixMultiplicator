@@ -33,7 +33,7 @@ namespace Domain.MatrixMultiplication
         private List<double> GetResultLine(int i)
         {
             var resultLine = new List<double>(MatrixB.Y);
-            var line = MatrixA.DoubleMatrix[i];
+            var line = MatrixA.InnerMatrix[i];
 
             for (int x = 0; x < MatrixB.Y; x++)
             {
@@ -41,7 +41,7 @@ namespace Domain.MatrixMultiplication
                 for (int y = 0; y < MatrixA.X; y++)
                 {
                     var numberLineA = line[y];
-                    var numberColumnB = MatrixB.DoubleMatrix[y][x];
+                    var numberColumnB = MatrixB.InnerMatrix[y][x];
                     result += numberLineA * numberColumnB;
                 }
                 resultLine.Add(result);

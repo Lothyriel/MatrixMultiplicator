@@ -24,7 +24,7 @@ namespace Domain.Connection
             return Encoding.UTF8.GetString(bytes);
         }
     }
-    public record MultiplicationRequest(List<double>? Line, int Xm, List<double>? Column, int Ym);
+    public record MultiplicationRequest(double[]? Line, int Xm, double[]? Column, int Ym);
     public record MultiplicationResult(int Xm, int Ym, double Result);
     public record ConnectionInfo(string IP, int Port);
 }

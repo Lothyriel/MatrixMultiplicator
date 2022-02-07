@@ -1,4 +1,5 @@
-﻿using Domain.Matrices;
+﻿using Domain.ExtensionMethods;
+using Domain.MatrixOperations;
 
 namespace Domain.MatrixMultiplication
 {
@@ -10,15 +11,15 @@ namespace Domain.MatrixMultiplication
             MatrixB = new();
         }
 
-        public Matrix MatrixA { get; }
-        public Matrix MatrixB { get; }
+        public IncompleteMatrix MatrixA { get; }
+        public IncompleteMatrix MatrixB { get; }
 
-        public double MultiplyLineByColumn(List<double>? line, int xM, List<double>? column, int yM)
+        public double MultiplyLineByColumn(double[]? line, int xM, double[]? column, int yM)
         {
             SyncMatrixData(ref line, xM, ref column, yM);
 
             double result = 0;
-            for (int y = 0; y < line!.Count; y++)
+            for (int y = 0; y < line!.Length; y++)
             {
                 var numeroLinhaA = line[y];
                 var numeroColunaB = column![y];
@@ -27,10 +28,10 @@ namespace Domain.MatrixMultiplication
             return result;
         }
 
-        private void SyncMatrixData(ref List<double>? line, int xM, ref List<double>? column, int yM)
+        public void SyncMatrixData(ref double[]? line, int xM, ref double[]? column, int yM)
         {
-            line ??= MatrixA.DoubleMatrix[xM];
-            column ??= MatrixB.GetColumn(yM);
+            line ??= MatrixA[xM].InnerArray.Denullify<double?,double>();
+            column ??= MatrixB.GetColumn(yM).Denullify<double?, double>();
         }
     }
 }

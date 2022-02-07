@@ -13,7 +13,7 @@ namespace Domain.Connection
             var multiCastIP = IPAddress.Parse(ipAddress);
 
             RemoteEndPoint = new IPEndPoint(multiCastIP, port);
-            Client = new UdpClient();
+            Client = new UdpClient(port);
 
             Client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             Client.ExclusiveAddressUse = false;

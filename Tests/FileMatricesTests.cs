@@ -10,8 +10,12 @@ namespace Tests
 {
     public class FileMatricesTests
     {
-        public const string PathMatrixA = "..\\..\\..\\..\\matA.txt";
-        public const string PathMatrixB = "..\\..\\..\\..\\matB.txt";
+        private const string PathMatrixA = "..\\..\\..\\..\\matA.txt";
+        private const string PathMatrixB = "..\\..\\..\\..\\matB.txt";
+        private const string MD5HashResultMatrix = "c4d56edebadb13b0cdf98429a8e54414";
+        private const string MD5HashMatrixA = "c06ab7d1d97602cdca927504fcf9b997";
+        private const string MD5HashMatrixB = "3428d1ca214241a897c4370973357df9";
+
 
         [Test]
         [TestCase(PathMatrixA)]
@@ -36,6 +40,7 @@ namespace Tests
             var resultMatrix = multiplicator.MultiplySingleThreaded();
             resultMatrix.X.Should().Be(matrixA.X);
             resultMatrix.Y.Should().Be(matrixB.Y);
+            GetFileMD5Hash(resultMatrix.SaveFile()).Should().Be(MD5HashResultMatrix);
         }
 
         [Test]
@@ -49,19 +54,23 @@ namespace Tests
             var resultMatrix = multiplicator.MultiplyMultiThreaded();
             resultMatrix.X.Should().Be(matrixA.X);
             resultMatrix.Y.Should().Be(matrixB.Y);
+            GetFileMD5Hash(resultMatrix.SaveFile()).Should().Be(MD5HashResultMatrix);
         }
 
         [Test]
-        [TestCase(PathMatrixA, "c06ab7d1d97602cdca927504fcf9b997")]
-        [TestCase(PathMatrixB, "3428d1ca214241a897c4370973357df9")]
+        [TestCase(PathMatrixA, MD5HashMatrixA)]
+        [TestCase(PathMatrixB, MD5HashMatrixB)]
         public void ShouldVerifyMD5Hash(string path, string expectedHash)
+        {
+            GetFileMD5Hash(path).Should().Be(expectedHash);
+        }
+
+        public static string GetFileMD5Hash(string path) 
         {
             using var md5 = MD5.Create();
             using var stream = File.OpenRead(path);
             var bytes = md5.ComputeHash(stream);
-            var hash = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
-
-            hash.Should().Be(expectedHash);
+            return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
         }
     }
 }

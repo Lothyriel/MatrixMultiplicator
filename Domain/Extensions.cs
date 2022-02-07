@@ -14,5 +14,9 @@ namespace Domain.ExtensionMethods
             hashSet.Add(item);
             return hashSet;
         }
+        public static Out[] Denullify<In, Out>(this IEnumerable<In> enumerable)
+        {
+            return enumerable.Where(x => x is not null).Cast<Out>().ToArray();
+        }
     }
 }

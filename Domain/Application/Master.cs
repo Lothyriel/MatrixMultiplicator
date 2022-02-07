@@ -1,16 +1,18 @@
 ﻿using Domain.Connection;
 using Domain.ExtensionMethods;
+using Domain.Matrices;
 using Domain.MatrixMultiplicators;
 
 namespace Domain.Application
 {
     public class Master
     {
-        public Master(string ip)
+        public Master(string ip, Matrix matrixA, Matrix matrixB)
         {
             MatrixConnection = new(ip, 25565);
             IPs = new();
             IsRunning = false;
+            Multiplicator = new(matrixA, matrixB, this);
         }
 
         public MatrixConnection MatrixConnection { get; }

@@ -1,6 +1,8 @@
 using Domain.Exceptions;
+using Domain.ExtensionMethods;
 using Domain.Matrices;
 using Domain.MatrixMultiplication;
+using Domain.MatrixOperations;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ namespace Tests
     public class TDD
     {
         [Test]
-        public void ShouldMultiplyMatrices()
+        public void ShouldMultiplyMatricesSingleThread()
         {
             var matrixA = GetMatrixA();
 
@@ -25,7 +27,27 @@ namespace Tests
 
             for (int i = 0; i < resultMatrix.X; i++)
             {
-                resultMatrix.DoubleMatrix[i].Should().Equal(expectedMatrixResult.DoubleMatrix[i]);
+                resultMatrix.InnerMatrix[i].Should().Equal(expectedMatrixResult.InnerMatrix[i]);
+            }
+        }
+
+        [Test]
+        public void ShouldMultiplyMatricesMultiThread()
+        {
+            var matrixA = GetMatrixA();
+
+            var matrixB = GetMatrixB();
+
+            var expectedMatrixResult = GetResultMatrix();
+
+            var resultMatrix = new LocalMultiplicator(matrixA, matrixB).MultiplyMultiThreaded();
+
+            resultMatrix.X.Should().Be(matrixA.X);
+            resultMatrix.Y.Should().Be(matrixB.Y);
+
+            for (int i = 0; i < resultMatrix.X; i++)
+            {
+                resultMatrix.InnerMatrix[i].Should().Equal(expectedMatrixResult.InnerMatrix[i]);
             }
         }
 
@@ -42,6 +64,20 @@ namespace Tests
             transform.Should().Throw<InvalidMatrix>();
         }
 
+        [Test]
+        public void ShouldReturnValidColumn()
+        {
+            var matrix = new IncompleteMatrix();
+            matrix[0][0] = 1;
+            matrix[1][0] = 2;
+            matrix[2][0] = 3;
+
+            var expected = new double[] { 1, 2, 3 };
+
+            var col = matrix.GetColumn(0).Denullify<double?, double>();
+            col.Should().Equal(expected);
+        }
+
         public static Matrix GetResultMatrix()
         {
             var expectedmatrixListResult = new List<List<double>>()
@@ -49,8 +85,7 @@ namespace Tests
                 new List<double>() { 18,26,-4},
                 new List<double>() { 30,13,-11},
             };
-            var expectedMatrixResult = new Matrix(expectedmatrixListResult);
-            return expectedMatrixResult;
+            return new Matrix(expectedmatrixListResult);
         }
 
         public static Matrix GetMatrixB()

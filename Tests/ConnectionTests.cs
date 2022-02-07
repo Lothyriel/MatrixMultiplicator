@@ -29,10 +29,8 @@ namespace Tests
             var matrixB = TDD.GetMatrixB();
 
             var ip = "192.168.10.1";
-            var master = new Master(ip);
+            var master = new Master(ip, matrixA, matrixB);
             master.IPs.Add(ip);
-            var multiplicator = new DistributedMultiplicatorMaster(matrixA, matrixB, master);
-            master.Multiplicator = multiplicator;
 
             master.StartReceivingLoop();
             master.Start();

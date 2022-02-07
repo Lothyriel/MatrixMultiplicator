@@ -8,22 +8,22 @@ namespace Domain.Application
     {
         public Slave(string ip)
         {
-            MatrixConnection = new(ip, 25565);
             MatrixMultiplicator = new();
+            MatrixConnection = new(ip, 25565);
             Ip = ip;
         }
 
         public MatrixConnection MatrixConnection { get; }
-        public DistributedMultiplicatorSlave MatrixMultiplicator { get; }
+        public DistributedMultiplicatorSlave MatrixMultiplicator { get; set; }
         public string Ip { get; }
 
         public void Start()
         {
-            StartEvaluating(Evaluate);
+            StartEvaluating(SendResult);
         }
         public void StartAsync()
         {
-            StartEvaluating(EvaluateAsync);
+            StartEvaluating(SendResultAsync);
         }
         private void StartEvaluating(Action<MultiplicationRequest> handler)
         {
@@ -38,15 +38,20 @@ namespace Domain.Application
             }
         }
 
-        public void Evaluate(MultiplicationRequest request)
+        public double EvaluateRequest(MultiplicationRequest request)
         {
-            var result = MatrixMultiplicator.MultiplyLineByColumn(request.Line, request.Xm, request.Column, request.Ym);
+            return MatrixMultiplicator.MultiplyLineByColumn(request.Line, request.Xm, request.Column, request.Ym);
+        }
+
+        public void SendResult(MultiplicationRequest request)
+        {
+            double result = EvaluateRequest(request);
             MatrixConnection.Send(new MultiplicationResult(request.Xm, request.Ym, result), Ip);
         }
 
-        public void EvaluateAsync(MultiplicationRequest request)
+        public void SendResultAsync(MultiplicationRequest request)
         {
-            Task.Run(() => Evaluate(request));
+            Task.Run(() => SendResult(request));
         }
     }
 }

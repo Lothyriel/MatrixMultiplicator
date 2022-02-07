@@ -33,14 +33,18 @@ namespace Domain.MatrixMultiplicators
         {
             var tasks = new Task[MatrixA.X * MatrixB.Y];
             var ips = GetNextIp().GetEnumerator();
-            for (int x = 0; x < MatrixA.X; x++)
+            int x = 0;
+            int y = 0;
+
+            for (x = 0; x < MatrixA.X; x++)
             {
-                for (int y = 0; y < MatrixB.Y; y++)
+                for (y = 0; y < MatrixB.Y; y++)
                 {
                     ips.MoveNext();
-                    int interX = x;
-                    int interY = y;
-                    tasks[y + (MatrixB.Y * x)] = Task.Run(() => DistributedMultiplication(interX, interY, ips.Current));
+                    var copyX = x;  //avoiding lambda closures
+                    var copyY = y;
+                    var ipCopy = ips.Current;
+                    tasks[y + (MatrixB.Y * x)] = Task.Run(() => DistributedMultiplication(copyX, copyY, ipCopy));
                 }
             }
             Task.WaitAll(tasks);
@@ -55,7 +59,7 @@ namespace Domain.MatrixMultiplicators
             {
                 clientsLine ??= new();
 
-                line = MatrixA.DoubleMatrix[x];
+                line = MatrixA.InnerMatrix[x];
 
                 AlreadySentLines[x] = clientsLine.AddAndReturn(ip);
             }
@@ -69,7 +73,7 @@ namespace Domain.MatrixMultiplicators
                 AlreadySentColumns[y] = clientsColumns.AddAndReturn(ip);
             }
 
-            MatrixConnection.Send(new MultiplicationRequest(line, x, column, y), ip);
+            MatrixConnection.Send(new MultiplicationRequest(line?.ToArray(), x, column?.ToArray(), y), ip);
         }
 
         public void UpdateResult(MultiplicationResult multiplicationResult)
