@@ -1,5 +1,4 @@
 ﻿using Domain.Matrices;
-using Domain.MatrixOperations;
 
 namespace Domain.MatrixMultiplication
 {
@@ -17,23 +16,23 @@ namespace Domain.MatrixMultiplication
 
         public Matrix MultiplySingleThreaded()
         {
-            var resultMatrix = new IncompleteMatrix(MatrixA.X, MatrixB.Y);
+            var resultMatrix = new List<List<double>>(MatrixA.X);
             for (int i = 0; i < MatrixA.X; i++)
             {
-                resultMatrix[i] = GetResultLine(i);
+                resultMatrix.Add(GetResultLine(i));
             }
             return new Matrix(resultMatrix);
         }
         public Matrix MultiplyMultiThreaded()
         {
-            var resultMatrix = new IncompleteMatrix(MatrixA.X, MatrixB.Y);
+            var resultMatrix = new Dictionary<int, List<double>>(MatrixA.X);
             int i = 0;
-            Parallel.For(i, MatrixA.X, (i) => resultMatrix[i] = GetResultLine(i));
-            return new Matrix(resultMatrix);
+            Parallel.For(i, MatrixA.X, (i) => resultMatrix.Add(i, GetResultLine(i)));
+            return Matrix.Sorted(resultMatrix);
         }
-        private IncompleteArray GetResultLine(int i)
+        private List<double> GetResultLine(int i)
         {
-            var resultLine = new IncompleteArray(MatrixB.Y);
+            var resultLine = new List<double>(MatrixB.Y);
             var line = MatrixA.InnerMatrix[i];
 
             for (int x = 0; x < MatrixB.Y; x++)
@@ -41,11 +40,11 @@ namespace Domain.MatrixMultiplication
                 double result = 0;
                 for (int y = 0; y < MatrixA.X; y++)
                 {
-                    double numberLineA = (double)line[y]!;
-                    double numberColumnB = (double)MatrixB.InnerMatrix[y][x]!;
+                    double numberLineA = line[y]!;
+                    double numberColumnB = MatrixB.InnerMatrix[y][x]!;
                     result += numberLineA * numberColumnB;
                 }
-                resultLine[x] = result;
+                resultLine.Add(result);
             }
             return resultLine;
         }

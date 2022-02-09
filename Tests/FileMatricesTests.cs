@@ -16,44 +16,44 @@ namespace Tests
         private const string MD5HashMatrixA = "c06ab7d1d97602cdca927504fcf9b997";
         private const string MD5HashMatrixB = "3428d1ca214241a897c4370973357df9";
 
+        public FileMatricesTests()
+        {
+            MatrixA = MatrixReader.Resolve(PathMatrixA);
+            MatrixB = MatrixReader.Resolve(PathMatrixB);
+        }
+
+        public Matrix MatrixA { get;}
+        public Matrix MatrixB { get;}
 
         [Test]
-        [TestCase(PathMatrixA)]
-        [TestCase(PathMatrixB)]
-        public void ShouldReadMatrix(string path)
+        public void ShouldReadValidMatrix()
         {
-            var reader = new MatrixReader(path);
-            var matrix = reader.Build();
+            MatrixA.X.Should().Be(4096);
+            MatrixB.Y.Should().Be(4096);
 
-            matrix.X.Should().Be(4096);
-            matrix.Y.Should().Be(4096);
+            MatrixA.X.Should().Be(4096);
+            MatrixB.Y.Should().Be(4096);
         }
 
         [Test]
         public void ShouldMultiplyFileMatricesSingleThreaded()
         {
-            var matrixA = new MatrixReader(PathMatrixA).Build();
-            var matrixB = new MatrixReader(PathMatrixB).Build();
-
-            var multiplicator = new LocalMultiplicator(matrixA, matrixB);
+            var multiplicator = new LocalMultiplicator(MatrixA, MatrixB);
 
             var resultMatrix = multiplicator.MultiplySingleThreaded();
-            resultMatrix.X.Should().Be(matrixA.X);
-            resultMatrix.Y.Should().Be(matrixB.Y);
+            resultMatrix.X.Should().Be(MatrixA.X);
+            resultMatrix.Y.Should().Be(MatrixB.Y);
             GetFileMD5Hash(resultMatrix.SaveFile()).Should().Be(MD5HashResultMatrix);
         }
 
         [Test]
         public void ShouldMultiplyFileMatricesMultiThreaded()
         {
-            var matrixA = new MatrixReader(PathMatrixA).Build();
-            var matrixB = new MatrixReader(PathMatrixB).Build();
-
-            var multiplicator = new LocalMultiplicator(matrixA, matrixB);
+            var multiplicator = new LocalMultiplicator(MatrixA, MatrixB);
 
             var resultMatrix = multiplicator.MultiplyMultiThreaded();
-            resultMatrix.X.Should().Be(matrixA.X);
-            resultMatrix.Y.Should().Be(matrixB.Y);
+            resultMatrix.X.Should().Be(MatrixA.X);
+            resultMatrix.Y.Should().Be(MatrixB.Y);
             GetFileMD5Hash(resultMatrix.SaveFile()).Should().Be(MD5HashResultMatrix);
         }
 

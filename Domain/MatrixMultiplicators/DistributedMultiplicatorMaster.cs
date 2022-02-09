@@ -85,8 +85,8 @@ namespace Domain.MatrixMultiplicators
         }
         public void DistributedMultiplication(int x, int y, ClientData clientData)
         {
-            double?[]? line = null;
-            double?[]? column = null;
+            List<double>? line = null;
+            List<double>? column = null;
 
             if (!AlreadySentLines.TryGetValue(clientData, out var clientsLine) || !clientsLine.TryGetValue(x, out _))
             {
@@ -106,7 +106,7 @@ namespace Domain.MatrixMultiplicators
                 AlreadySentColumns[clientData] = clientsColumns.AddAndReturn(y);
             }
 
-            ServerMatrixConnection.SendRequest(new MultiplicationData(line?.Denullify(), x, column?.Denullify(), y), clientData);
+            ServerMatrixConnection.SendRequest(new MultiplicationData(line, x, column, y), clientData);
         }
 
         public ClientData GetNextClientData()

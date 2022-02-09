@@ -1,18 +1,19 @@
-﻿using Domain.MatrixOperations;
+﻿using Domain.Exceptions;
 using System.Text;
 
 namespace Domain.Matrices
 {
     public class Matrix
     {
-        public Matrix(IncompleteMatrix matrix)
+        public Matrix(List<List<double>> matrix)
         {
+            Assert(matrix);
             InnerMatrix = matrix;
         }
 
-        public int X => InnerMatrix.X;
-        public int Y => InnerMatrix.Y;
-        public IncompleteMatrix InnerMatrix { get; }
+        public int X => InnerMatrix.Count;
+        public int Y => InnerMatrix[0].Count;
+        public List<List<double>> InnerMatrix { get; }
 
         public string SaveFile()
         {
@@ -30,9 +31,19 @@ namespace Domain.Matrices
             return path;
         }
 
-        public double?[] GetColumn(int column)
+        public List<double> GetColumn(int column)
         {
-            return InnerMatrix.GetColumn(column);
+            return Enumerable.Range(0, X).Select(x => InnerMatrix[x][column]).ToList();
+        }
+
+        public static Matrix Sorted(Dictionary<int, List<double>> resultMatrix)
+        {
+            return new Matrix(resultMatrix.OrderBy(line => line.Key).Select(line => line.Value).ToList());
+        }
+        public static void Assert(List<List<double>> matrix)
+        {
+            if (matrix.Any(line => line.Count != matrix[0].Count))
+                throw new InvalidMatrix();
         }
     }
 }

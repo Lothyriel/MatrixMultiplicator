@@ -3,7 +3,6 @@ using Domain.Exceptions;
 using Domain.ExtensionMethods;
 using Domain.Matrices;
 using Domain.MatrixMultiplication;
-using Domain.MatrixOperations;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace Tests
 
             for (int i = 0; i < resultMatrix.X; i++)
             {
-                resultMatrix.InnerMatrix.InnerMatrix[i].InnerArray.Should().Equal(expectedMatrixResult.InnerMatrix.InnerMatrix[i].InnerArray);
+                resultMatrix.InnerMatrix[i].Should().Equal(expectedMatrixResult.InnerMatrix[i]);
             }
         }
 
@@ -48,36 +47,36 @@ namespace Tests
 
             for (int i = 0; i < resultMatrix.X; i++)
             {
-                resultMatrix.InnerMatrix.InnerMatrix[i].InnerArray.Should().Equal(expectedMatrixResult.InnerMatrix.InnerMatrix[i].InnerArray);
+                resultMatrix.InnerMatrix[i].Should().Equal(expectedMatrixResult.InnerMatrix[i]);
             }
         }
 
         [Test]
         public void ShouldFailCreatingMatrix()
         {
-            var matrix = new IncompleteMatrix();
-            matrix[0][0] = 18;
-            matrix[0][1] = 26;
-            matrix[0][2] = -4;
+            var matrix = new List<List<double>>()
+            {
+                new List<double>(){ 18,26,-4},
+                new List<double>(){ 30,13}
+            };
 
-            matrix[1][0] = 30;
-            matrix[1][1] = 13;
-
-            var transform = () => MatrixReader.Assert(matrix);
+            var transform = () => Matrix.Assert(matrix);
             transform.Should().Throw<InvalidMatrix>();
         }
 
         [Test]
         public void ShouldReturnValidColumn()
         {
-            var matrix = new IncompleteMatrix();
-            matrix[0][0] = 1;
-            matrix[1][0] = 2;
-            matrix[2][0] = 3;
+            var matrix = new List<List<double>>()
+            {
+                new List<double>(){ 1},
+                new List<double>(){ 2},
+                new List<double>(){ 3},
+            };
 
             var expected = new double[] { 1, 2, 3 };
 
-            var col = matrix.GetColumn(0).Denullify();
+            var col = new Matrix(matrix).GetColumn(0);
             col.Should().Equal(expected);
         }
 
@@ -106,40 +105,33 @@ namespace Tests
 
         public static Matrix GetResultMatrix()
         {
-            var matrix = new IncompleteMatrix();
-            matrix[0][0] = 18;
-            matrix[0][1] = 26;
-            matrix[0][2] = -4;
-
-            matrix[1][0] = 30;
-            matrix[1][1] = 13;
-            matrix[1][2] = -11;
+            var matrix = new List<List<double>>()
+            {
+                new List<double>(){ 18,26,-4},
+                new List<double>(){ 30,13,-11},
+            };
 
             return new Matrix(matrix);
         }
 
         public static Matrix GetMatrixB()
         {
-            var matrix = new IncompleteMatrix();
-            matrix[0][0] = 6;
-            matrix[0][1] = 4;
-            matrix[0][2] = -2;
-
-            matrix[1][0] = 0;
-            matrix[1][1] = 7;
-            matrix[1][2] = 1;
+            var matrix = new List<List<double>>()
+            {
+                new List<double>(){ 6,4,-2},
+                new List<double>(){ 0,7,1},
+            };
 
             return new Matrix(matrix);
         }
 
         public static Matrix GetMatrixA()
         {
-            var matrix = new IncompleteMatrix();
-            matrix[0][0] = 3;
-            matrix[0][1] = 2;
-
-            matrix[1][0] = 5;
-            matrix[1][1] = -1;
+            var matrix = new List<List<double>>()
+            {
+                new List<double>(){ 3,2},
+                new List<double>(){ 5,-1},
+            };
 
             return new Matrix(matrix);
         }
