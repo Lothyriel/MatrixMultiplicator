@@ -28,7 +28,7 @@ namespace Tests
 
             for (int i = 0; i < resultMatrix.X; i++)
             {
-                resultMatrix.InnerMatrix[i].Should().Equal(expectedMatrixResult.InnerMatrix[i]);
+                resultMatrix.InnerMatrix.InnerMatrix[i].InnerArray.Should().Equal(expectedMatrixResult.InnerMatrix.InnerMatrix[i].InnerArray);
             }
         }
 
@@ -48,20 +48,22 @@ namespace Tests
 
             for (int i = 0; i < resultMatrix.X; i++)
             {
-                resultMatrix.InnerMatrix[i].Should().Equal(expectedMatrixResult.InnerMatrix[i]);
+                resultMatrix.InnerMatrix.InnerMatrix[i].InnerArray.Should().Equal(expectedMatrixResult.InnerMatrix.InnerMatrix[i].InnerArray);
             }
         }
 
         [Test]
         public void ShouldFailCreatingMatrix()
         {
-            var matrixList = new List<List<double>>()
-            {
-                new List<double>() { 18,26,-4},
-                new List<double>() { 30,13},
-            };
+            var matrix = new IncompleteMatrix();
+            matrix[0][0] = 18;
+            matrix[0][1] = 26;
+            matrix[0][2] = -4;
 
-            var transform = () => MatrixReader.Assert(matrixList);
+            matrix[1][0] = 30;
+            matrix[1][1] = 13;
+
+            var transform = () => MatrixReader.Assert(matrix);
             transform.Should().Throw<InvalidMatrix>();
         }
 
@@ -89,44 +91,57 @@ namespace Tests
             var user = new TcpUser(ip, port);
 
             var data = server.ReceiveConnection();
-            user.Send(8);
-            var eight = TcpServer.ReceiveResult(data);
 
-            user.Send(50);
-            var fifty = TcpServer.ReceiveResult(data);
+            var expectedResult1 = new MultiplicationResult(0, 0, 10);
+            user.Send(expectedResult1);
+            var result1 = TcpServer.ReceiveResult(data);
 
-            fifty.Should().Be("50");
-            eight.Should().Be("8");
+            var expectedResult2 = new MultiplicationResult(1, 1, 20);
+            user.Send(expectedResult2);
+            var result2 = TcpServer.ReceiveResult(data);
+
+            result1.Should().Be(expectedResult1);
+            result2.Should().Be(expectedResult2);
         }
 
         public static Matrix GetResultMatrix()
         {
-            var expectedmatrixListResult = new List<List<double>>()
-            {
-                new List<double>() { 18,26,-4},
-                new List<double>() { 30,13,-11},
-            };
-            return new Matrix(expectedmatrixListResult);
+            var matrix = new IncompleteMatrix();
+            matrix[0][0] = 18;
+            matrix[0][1] = 26;
+            matrix[0][2] = -4;
+
+            matrix[1][0] = 30;
+            matrix[1][1] = 13;
+            matrix[1][2] = -11;
+
+            return new Matrix(matrix);
         }
 
         public static Matrix GetMatrixB()
         {
-            var matrixListB = new List<List<double>>()
-            {
-                new List<double>() { 6,4,-2},
-                new List<double>() { 0,7,1},
-            };
-            return new Matrix(matrixListB);
+            var matrix = new IncompleteMatrix();
+            matrix[0][0] = 6;
+            matrix[0][1] = 4;
+            matrix[0][2] = -2;
+
+            matrix[1][0] = 0;
+            matrix[1][1] = 7;
+            matrix[1][2] = 1;
+
+            return new Matrix(matrix);
         }
 
         public static Matrix GetMatrixA()
         {
-            var matrixListA = new List<List<double>>()
-            {
-                new List<double>() { 3,2},
-                new List<double>() { 5,-1},
-            };
-            return new Matrix(matrixListA);
+            var matrix = new IncompleteMatrix();
+            matrix[0][0] = 3;
+            matrix[0][1] = 2;
+
+            matrix[1][0] = 5;
+            matrix[1][1] = -1;
+
+            return new Matrix(matrix);
         }
     }
 }

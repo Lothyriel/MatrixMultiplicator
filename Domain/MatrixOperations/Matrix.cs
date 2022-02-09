@@ -1,17 +1,18 @@
-﻿using System.Text;
+﻿using Domain.MatrixOperations;
+using System.Text;
 
 namespace Domain.Matrices
 {
     public class Matrix
     {
-        public Matrix(List<List<double>> jaggedLists)
+        public Matrix(IncompleteMatrix matrix)
         {
-            InnerMatrix = jaggedLists;
+            InnerMatrix = matrix;
         }
 
-        public int X => InnerMatrix.Count;
-        public int Y => InnerMatrix[0].Count;
-        public List<List<double>> InnerMatrix { get; }
+        public int X => InnerMatrix.X;
+        public int Y => InnerMatrix.Y;
+        public IncompleteMatrix InnerMatrix { get; }
 
         public string SaveFile()
         {
@@ -29,9 +30,9 @@ namespace Domain.Matrices
             return path;
         }
 
-        public List<double> GetColumn(int column)
+        public double?[] GetColumn(int column)
         {
-            return Enumerable.Range(0, X).Select(x => InnerMatrix[x][column]).ToList();
+            return InnerMatrix.GetColumn(column);
         }
     }
 }

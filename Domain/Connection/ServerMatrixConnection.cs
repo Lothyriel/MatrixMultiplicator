@@ -13,9 +13,15 @@
         {
             TcpServer.SendReply(data, clientData);
         }
-        public ClientData Receive() 
+
+        public ClientData ReceiveConnection() 
         {
             return Connection.ReceiveConnection();   
+        }
+
+        public static MultiplicationResult ReceiveResult(ClientData client) 
+        {
+            return TcpServer.ReceiveResult(client);
         }
     }
 }

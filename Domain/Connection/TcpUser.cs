@@ -25,9 +25,9 @@ namespace Domain.Connection
             return Encoding.UTF8.GetString(bytes, 0, bytesRead);
         }
 
-        public void Send(object obj)
+        public void Send(MultiplicationResult result)
         {
-            var json = JsonConvert.SerializeObject(obj);
+            var json = JsonConvert.SerializeObject(result);
 
             byte[] bytesToSend = Encoding.UTF8.GetBytes(json);
 

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Domain.ExtensionMethods;
+using Newtonsoft.Json;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -33,12 +34,12 @@ namespace Domain.Connection
 
             return new ClientData(ns, client);
         }
-        public static string ReceiveResult(ClientData data) 
+        public static MultiplicationResult ReceiveResult(ClientData data) 
         {
             byte[] buffer = new byte[ReceiveBufferSize];
 
             int bytesRead = data.Stream.Read(buffer, 0, ReceiveBufferSize);
-            return Encoding.UTF8.GetString(buffer[..bytesRead]);
+            return Encoding.UTF8.GetString(buffer[..bytesRead]).Desserialize<MultiplicationResult>();
         }
 
         public void Dispose()

@@ -7,7 +7,7 @@ namespace ClientWindowsForms
         {
             Instance = this;
             InitializeComponent();
-            OpenFormPanel(new ShowCalculation());
+            OpenFormPanel(new ShowCalculation("sexo games", 10));
         }
         public void OpenFormPanel(Form panelForm)
         {

@@ -1,5 +1,4 @@
 ﻿using Domain.Connection;
-using Domain.Matrices;
 using Domain.MatrixMultiplicators;
 
 namespace Domain.Application
@@ -15,23 +14,44 @@ namespace Domain.Application
         public ServerMatrixConnection MatrixConnection { get; }
         public DistributedMultiplicatorMaster Multiplicator { get; set; }
 
-        public void StartRequests()
+        public void Start() 
+        {
+            StartReceivingConnections();
+            EndHandler();
+        }
+        public void StartSendingRequests()
         {
             Multiplicator.SendMultiplicationRequests();
         }
-        public void StartReceiving()
-        {
-            Task.Run(Loop);
 
-            void Loop()
+        private void StartReceivingConnections()
+        {
+            Task.Run(ReceivingLoop);
+
+            void ReceivingLoop()
             {
                 while (true)
                 {
-                    Multiplicator.ClientsData.Add(MatrixConnection.Receive());
+                    var clientData = MatrixConnection.ReceiveConnection();
+                    Multiplicator.AddClientData(clientData);
+                    HandleClientResults(clientData);
                 }
             }
         }
-        public void EndHandler()
+        private void HandleClientResults(ClientData clientData)
+        {
+            Task.Run(() => HandleLoop(clientData));
+
+            void HandleLoop(ClientData clientData) 
+            {
+                while (clientData is not null)
+                {
+                    var result = ServerMatrixConnection.ReceiveResult(clientData);
+                    Multiplicator.UpdateResult(result);
+                }
+            }
+        }
+        private void EndHandler()
         {
             Task.Run(CheckLoop);
 
@@ -41,25 +61,8 @@ namespace Domain.Application
                 {
                     Thread.Sleep(3000);
                 }
-                CloseConnections();
+                Multiplicator.CloseConnections();
             }
-        }
-
-        private void CloseConnections()
-        {
-            foreach (var clientData in Multiplicator.ClientsData)
-            {
-                Task.Run(() => EndConnection(clientData));
-            }
-            void EndConnection(ClientData clientData)
-            {
-                clientData.Client.Close();
-                clientData.Stream.Close();
-            }
-        }
-        private void HandleResult(MultiplicationResult multiplicationResult)
-        {
-            Multiplicator.UpdateResult(multiplicationResult);
         }
     }
 }

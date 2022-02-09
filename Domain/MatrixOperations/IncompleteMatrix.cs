@@ -1,7 +1,19 @@
 ﻿namespace Domain.MatrixOperations
 {
-    public class IncompleteMatrix : IncompleteMatrix<double?> { }
-    public class IncompleteArray : IncompleteArray<double?> { }
+    public class IncompleteMatrix : IncompleteMatrix<double?> 
+    {
+        public IncompleteMatrix(int x = 2, int y = 2) : base(x, y)
+        {
+
+        }
+    }
+    public class IncompleteArray : IncompleteArray<double?> 
+    {
+        public IncompleteArray(int lenght = 2) : base(lenght)
+        {
+
+        }
+    }
     public class IncompleteMatrix<T>
     {
         public IncompleteMatrix(int x = 2, int y = 2)
@@ -13,7 +25,7 @@
         public int X => InnerMatrix.Length;
         public int Y => InnerMatrix[0]!.Length;
 
-        private readonly IncompleteArray<IncompleteArray<T>> InnerMatrix;
+        public readonly IncompleteArray<IncompleteArray<T>> InnerMatrix;
 
         public IncompleteArray<T> this[int key]
         {

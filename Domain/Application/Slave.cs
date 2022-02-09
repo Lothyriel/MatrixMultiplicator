@@ -20,11 +20,6 @@ namespace Domain.Application
             StartEvaluating(SendResultAsync);
         }
 
-        public void SendConnectionAttempt()
-        {
-            //MatrixConnection.Send(1);
-        }
-
         public double EvaluateRequest(MultiplicationData request)
         {
             return MatrixMultiplicator.MultiplyLineByColumn(request.Line, request.Xm, request.Column, request.Ym);

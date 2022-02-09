@@ -22,7 +22,7 @@ namespace ClientWindowsForms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Slave.SendConnectionAttempt();
+            Slave.Start();
             MessageBox.Show("Trying to connect to the server", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

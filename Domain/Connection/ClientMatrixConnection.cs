@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Domain.ExtensionMethods;
+using Newtonsoft.Json;
 using System.Text;
 
 namespace Domain.Connection
@@ -16,10 +17,9 @@ namespace Domain.Connection
             return Connection.Receive();
         }
 
-        public void Send(object toSend)
+        public void Send(MultiplicationResult result)
         {
-            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(toSend));
-            Connection.Send(bytes);
+            Connection.Send(result);
         }
     }
 }

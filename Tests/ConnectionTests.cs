@@ -5,7 +5,6 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -23,7 +22,7 @@ namespace Tests
             data.Desserialize<MultiplicationData>().Should().Be(toSend);
         }
         [Test]
-        public void ShouldConnect()
+        public void ShouldMultiplyLineByColumnThroughSocket()
         {
             var matrixA = TDD.GetMatrixA();
             var matrixB = TDD.GetMatrixB();
@@ -35,9 +34,19 @@ namespace Tests
 
             var slave = new Slave(ip, port);
 
-            master.StartReceiving();
-            slave.SendConnectionAttempt();
-            master.StartRequests();
+            master.Multiplicator.AddClientData(master.MatrixConnection.ReceiveConnection());
+            var clientData = master.Multiplicator.GetNextClientData();
+            master.Multiplicator.DistributedMultiplication(0, 0, clientData);
+
+            var recevived = slave.MatrixConnection.Receive();
+            slave.SendResult(recevived.Desserialize<MultiplicationData>());
+
+            var result = ServerMatrixConnection.ReceiveResult(clientData);
+
+            master.Multiplicator.UpdateResult(result);
+
+            result.Result.Should().Be(18);
+            master.Multiplicator.Result[0, 0].Should().Be(18);
         }
     }
 }
