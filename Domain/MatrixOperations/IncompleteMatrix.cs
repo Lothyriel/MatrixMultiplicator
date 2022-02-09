@@ -13,7 +13,7 @@
         public int X => InnerMatrix.Length;
         public int Y => InnerMatrix[0]!.Length;
 
-        private IncompleteArray<IncompleteArray<T>> InnerMatrix;
+        private readonly IncompleteArray<IncompleteArray<T>> InnerMatrix;
 
         public IncompleteArray<T> this[int key]
         {

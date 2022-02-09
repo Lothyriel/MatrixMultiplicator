@@ -6,26 +6,41 @@ namespace Domain.Application
 {
     public class Slave
     {
-        public Slave(string ip)
+        public Slave(string ip, int port)
         {
             MatrixMultiplicator = new();
-            MatrixConnection = new(ip, 25565);
-            Ip = ip;
+            MatrixConnection = new(ip, port);
         }
 
-        public MatrixConnection MatrixConnection { get; }
+        public ClientMatrixConnection MatrixConnection { get; }
         public DistributedMultiplicatorSlave MatrixMultiplicator { get; set; }
-        public string Ip { get; }
 
         public void Start()
         {
-            StartEvaluating(SendResult);
-        }
-        public void StartAsync()
-        {
             StartEvaluating(SendResultAsync);
         }
-        private void StartEvaluating(Action<MultiplicationRequest> handler)
+
+        public void SendConnectionAttempt()
+        {
+            //MatrixConnection.Send(1);
+        }
+
+        public double EvaluateRequest(MultiplicationData request)
+        {
+            return MatrixMultiplicator.MultiplyLineByColumn(request.Line, request.Xm, request.Column, request.Ym);
+        }
+
+        public void SendResult(MultiplicationData request)
+        {
+            double result = EvaluateRequest(request);
+            MatrixConnection.Send(new MultiplicationResult(request.Xm, request.Ym, result));
+        }
+
+        public void SendResultAsync(MultiplicationData request)
+        {
+            Task.Run(() => SendResult(request));
+        }
+        private void StartEvaluating(Action<MultiplicationData> handler)
         {
             while (true)
             {
@@ -34,24 +49,8 @@ namespace Domain.Application
                     break;
 
                 if (received.StartsWith("{\"L"))
-                    handler(received.Desserialize<MultiplicationRequest>());
+                    handler(received.Desserialize<MultiplicationData>());
             }
-        }
-
-        public double EvaluateRequest(MultiplicationRequest request)
-        {
-            return MatrixMultiplicator.MultiplyLineByColumn(request.Line, request.Xm, request.Column, request.Ym);
-        }
-
-        public void SendResult(MultiplicationRequest request)
-        {
-            double result = EvaluateRequest(request);
-            MatrixConnection.Send(new MultiplicationResult(request.Xm, request.Ym, result), Ip);
-        }
-
-        public void SendResultAsync(MultiplicationRequest request)
-        {
-            Task.Run(() => SendResult(request));
         }
     }
 }

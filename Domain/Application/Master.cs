@@ -1,5 +1,4 @@
 ﻿using Domain.Connection;
-using Domain.ExtensionMethods;
 using Domain.Matrices;
 using Domain.MatrixMultiplicators;
 
@@ -7,65 +6,60 @@ namespace Domain.Application
 {
     public class Master
     {
-        public Master(string ip, Matrix matrixA, Matrix matrixB)
+        public Master(DistributedMultiplicatorMaster multiplicator, string ip, int port)
         {
-            MatrixConnection = new(ip, 25565);
-            IPs = new();
-            IsRunning = false;
-            Multiplicator = new(matrixA, matrixB, this);
+            MatrixConnection = new(ip, port);
+            Multiplicator = multiplicator;
         }
 
-        public MatrixConnection MatrixConnection { get; }
-        public List<string> IPs { get; }
+        public ServerMatrixConnection MatrixConnection { get; }
         public DistributedMultiplicatorMaster Multiplicator { get; set; }
 
-        private bool IsRunning { get; set; }
-
-        public void Start()
+        public void StartRequests()
         {
-            IsRunning = true;
             Multiplicator.SendMultiplicationRequests();
         }
-        public void EndHandler(Action handler)
+        public void StartReceiving()
         {
-            Task.Run(() => CheckLoop(handler));
+            Task.Run(Loop);
 
-            void CheckLoop(Action handler)
+            void Loop()
+            {
+                while (true)
+                {
+                    Multiplicator.ClientsData.Add(MatrixConnection.Receive());
+                }
+            }
+        }
+        public void EndHandler()
+        {
+            Task.Run(CheckLoop);
+
+            void CheckLoop()
             {
                 while (!Multiplicator.Ended())
                 {
                     Thread.Sleep(3000);
                 }
-                IsRunning = false;
-                handler();
+                CloseConnections();
             }
         }
-        public void StartReceivingLoop()
-        {
-            Task.Run(StartLoop);
 
-            void StartLoop()
+        private void CloseConnections()
+        {
+            foreach (var clientData in Multiplicator.ClientsData)
             {
-                while (IsRunning)
-                {
-                    var received = MatrixConnection.Receive();
-
-                    if (received.StartsWith("{\"X"))
-                        HandleResult(received.Desserialize<MultiplicationResult>());
-
-                    if (received.StartsWith("{\"I"))
-                        AddIp(received.Desserialize<ConnectionInfo>());
-                }
+                Task.Run(() => EndConnection(clientData));
             }
-        }
-
-        private void AddIp(ConnectionInfo connectionInfo)
-        {
-            IPs.Add(connectionInfo.IP);
+            void EndConnection(ClientData clientData)
+            {
+                clientData.Client.Close();
+                clientData.Stream.Close();
+            }
         }
         private void HandleResult(MultiplicationResult multiplicationResult)
         {
-            Multiplicator!.UpdateResult(multiplicationResult);
+            Multiplicator.UpdateResult(multiplicationResult);
         }
     }
 }

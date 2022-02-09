@@ -1,13 +1,13 @@
-namespace ClientWindowsForms
+namespace ServerWindowsForms.cs
 {
-    public partial class Client : Form
+    public partial class Server : Form
     {
-        public static Client? Instance { get; private set; }
-        public Client()
+        public static Server? Instance { get; private set; }
+        public Server()
         {
             Instance = this;
             InitializeComponent();
-            OpenFormPanel(new ShowCalculation());
+            //OpenFormPanel();
         }
         public void OpenFormPanel(Form panelForm)
         {

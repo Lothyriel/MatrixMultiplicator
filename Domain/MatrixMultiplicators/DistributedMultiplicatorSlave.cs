@@ -30,8 +30,8 @@ namespace Domain.MatrixMultiplication
 
         public void SyncMatrixData(ref double[]? line, int xM, ref double[]? column, int yM)
         {
-            line ??= MatrixA[xM].InnerArray.Denullify<double?,double>();
-            column ??= MatrixB.GetColumn(yM).Denullify<double?, double>();
+            line ??= MatrixA[xM].InnerArray.Denullify();
+            column ??= MatrixB.GetColumn(yM).Denullify();
         }
     }
 }

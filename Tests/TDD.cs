@@ -1,3 +1,4 @@
+using Domain.Connection;
 using Domain.Exceptions;
 using Domain.ExtensionMethods;
 using Domain.Matrices;
@@ -74,8 +75,28 @@ namespace Tests
 
             var expected = new double[] { 1, 2, 3 };
 
-            var col = matrix.GetColumn(0).Denullify<double?, double>();
+            var col = matrix.GetColumn(0).Denullify();
             col.Should().Equal(expected);
+        }
+
+        [Test]
+        public void ShouldCommunicateThroughSockets()
+        {
+            var ip = "127.0.0.1";
+            var port = 25565;
+
+            var server = new TcpServer(ip, port);
+            var user = new TcpUser(ip, port);
+
+            var data = server.ReceiveConnection();
+            user.Send(8);
+            var eight = TcpServer.ReceiveResult(data);
+
+            user.Send(50);
+            var fifty = TcpServer.ReceiveResult(data);
+
+            fifty.Should().Be("50");
+            eight.Should().Be("8");
         }
 
         public static Matrix GetResultMatrix()
