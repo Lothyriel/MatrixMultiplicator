@@ -1,4 +1,5 @@
 ﻿using Domain.Exceptions;
+using System.Globalization;
 using System.Text;
 
 namespace Domain.Matrices
@@ -19,14 +20,15 @@ namespace Domain.Matrices
         {
             var path = $"Matrix{X}x{Y}.txt";
             using var textWriter = new StreamWriter(path, false, Encoding.UTF8, 65536);
+            textWriter.AutoFlush = true;
             for (int x = 0; x < X; x++)
             {
                 var sb = new StringBuilder();
                 for (int y = 0; y < Y; y++)
                 {
-                    sb.Append($"{InnerMatrix[x][y]:0.0000} ");
+                    sb.Append($"{InnerMatrix[x][y].ToString("0.0000", CultureInfo.InvariantCulture)}{(Y == y ? "" : " ")}");
                 }
-                textWriter.WriteLine(sb);
+                textWriter.Write(X == x ? sb : sb.Append('\n'));
             }
             return path;
         }

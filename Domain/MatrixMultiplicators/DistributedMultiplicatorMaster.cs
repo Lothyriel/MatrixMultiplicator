@@ -106,7 +106,7 @@ namespace Domain.MatrixMultiplicators
                 AlreadySentColumns[clientData] = clientsColumns.AddAndReturn(y);
             }
 
-            ServerMatrixConnection.SendRequest(new MultiplicationData(line, x, column, y), clientData);
+            ServerMatrixConnection.SendRequest(new MultiplicationRequest(line, x, column, y), clientData);
         }
 
         public ClientData GetNextClientData()

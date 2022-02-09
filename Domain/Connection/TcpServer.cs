@@ -19,9 +19,10 @@ namespace Domain.Connection
 
         public TcpListener Listener { get; }
 
-        public static void SendReply(MultiplicationData data, ClientData clientData)
+        public static void SendMultiplicationRequest(MultiplicationRequest data, ClientData clientData)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+            var json = JsonConvert.SerializeObject(data);
+            byte[] bytes = Encoding.UTF8.GetBytes(json);
 
             var stream = clientData.Stream;
             stream.Write(bytes, 0, bytes.Length);

@@ -20,22 +20,22 @@ namespace Domain.Application
             StartEvaluating(SendResultAsync);
         }
 
-        public double EvaluateRequest(MultiplicationData request)
+        public double EvaluateRequest(MultiplicationRequest request)
         {
             return MatrixMultiplicator.MultiplyLineByColumn(request.Line, request.Xm, request.Column, request.Ym);
         }
 
-        public void SendResult(MultiplicationData request)
+        public void SendResult(MultiplicationRequest request)
         {
             double result = EvaluateRequest(request);
             MatrixConnection.Send(new MultiplicationResult(request.Xm, request.Ym, result));
         }
 
-        public void SendResultAsync(MultiplicationData request)
+        public void SendResultAsync(MultiplicationRequest request)
         {
             Task.Run(() => SendResult(request));
         }
-        private void StartEvaluating(Action<MultiplicationData> handler)
+        private void StartEvaluating(Action<MultiplicationRequest> handler)
         {
             while (true)
             {
@@ -44,7 +44,7 @@ namespace Domain.Application
                     break;
 
                 if (received.StartsWith("{\"L"))
-                    handler(received.Desserialize<MultiplicationData>());
+                    handler(received.Desserialize<MultiplicationRequest>());
             }
         }
     }

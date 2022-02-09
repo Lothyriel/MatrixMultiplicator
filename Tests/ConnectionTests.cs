@@ -13,13 +13,13 @@ namespace Tests
         [Test]
         public void ShouldDesserializeMultiplicationRequest()
         {
-            var toSend = new MultiplicationData(null, 0, null, 0);
+            var toSend = new MultiplicationRequest(null, 0, null, 0);
 
             var serialized = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(toSend));
 
             var data = Encoding.UTF8.GetString(serialized);
 
-            data.Desserialize<MultiplicationData>().Should().Be(toSend);
+            data.Desserialize<MultiplicationRequest>().Should().Be(toSend);
         }
         [Test]
         public void ShouldMultiplyLineByColumnThroughSocket()
@@ -39,7 +39,7 @@ namespace Tests
             master.Multiplicator.DistributedMultiplication(0, 0, clientData);
 
             var recevived = slave.MatrixConnection.Receive();
-            slave.SendResult(recevived.Desserialize<MultiplicationData>());
+            slave.SendResult(recevived.Desserialize<MultiplicationRequest>());
 
             var result = ServerMatrixConnection.ReceiveResult(clientData);
 

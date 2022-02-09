@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientWindowsForms", "ClientWindowsForms\ClientWindowsForms.csproj", "{24B73802-6AC8-4433-B4DD-A82AAC81A262}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerWindowsForms.cs", "ServerWindowsForms.cs\ServerWindowsForms.cs.csproj", "{76FF07F0-0007-4855-A588-7DE216657539}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerWindowsForms.cs", "ServerWindowsForms\ServerWindowsForms.cs.csproj", "{4FDCA674-68D9-4790-B798-D6A1C84AEF1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{24B73802-6AC8-4433-B4DD-A82AAC81A262}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24B73802-6AC8-4433-B4DD-A82AAC81A262}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24B73802-6AC8-4433-B4DD-A82AAC81A262}.Release|Any CPU.Build.0 = Release|Any CPU
-		{76FF07F0-0007-4855-A588-7DE216657539}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76FF07F0-0007-4855-A588-7DE216657539}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{76FF07F0-0007-4855-A588-7DE216657539}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76FF07F0-0007-4855-A588-7DE216657539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FDCA674-68D9-4790-B798-D6A1C84AEF1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FDCA674-68D9-4790-B798-D6A1C84AEF1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FDCA674-68D9-4790-B798-D6A1C84AEF1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FDCA674-68D9-4790-B798-D6A1C84AEF1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

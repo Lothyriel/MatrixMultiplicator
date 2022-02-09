@@ -9,9 +9,9 @@
             Connection = new(ip, port);
         }
 
-        public static void SendRequest(MultiplicationData data, ClientData clientData)
+        public static void SendRequest(MultiplicationRequest data, ClientData clientData)
         {
-            TcpServer.SendReply(data, clientData);
+            TcpServer.SendMultiplicationRequest(data, clientData);
         }
 
         public ClientData ReceiveConnection() 
