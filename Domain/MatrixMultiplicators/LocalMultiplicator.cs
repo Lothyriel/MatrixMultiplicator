@@ -1,4 +1,5 @@
 ﻿using Domain.Matrices;
+using System.Diagnostics;
 
 namespace Domain.MatrixMultiplication
 {
@@ -13,22 +14,33 @@ namespace Domain.MatrixMultiplication
 
         public Matrix MatrixA { get; }
         public Matrix MatrixB { get; }
+        public Action<int, int>? ResultHandler { get; set; }
+        public Action<TimeSpan>? ExitHandler { get; set; }
+        public Matrix? Result { get; private set; }
 
-        public Matrix MultiplySingleThreaded()
+        public void MultiplySingleThreaded()
         {
+            var sw = Stopwatch.StartNew();
             var resultMatrix = new List<List<double>>(MatrixA.X);
             for (int i = 0; i < MatrixA.X; i++)
             {
                 resultMatrix.Add(GetResultLine(i));
             }
-            return new Matrix(resultMatrix);
+            sw.Stop();
+            Result = new Matrix(resultMatrix);
+            ExitHandler!(sw.Elapsed);
         }
-        public Matrix MultiplyMultiThreaded()
+        public void MultiplyMultiThreaded()
         {
+            var sw = Stopwatch.StartNew();
+
             var resultMatrix = new Dictionary<int, List<double>>(MatrixA.X);
             int i = 0;
             Parallel.For(i, MatrixA.X, (i) => resultMatrix.Add(i, GetResultLine(i)));
-            return Matrix.Sorted(resultMatrix);
+            sw.Stop();
+            Result = Matrix.Sorted(resultMatrix);
+
+            ExitHandler!(sw.Elapsed);
         }
         private List<double> GetResultLine(int i)
         {
@@ -45,6 +57,7 @@ namespace Domain.MatrixMultiplication
                     result += numberLineA * numberColumnB;
                 }
                 resultLine.Add(result);
+                ResultHandler!(x, i);
             }
             return resultLine;
         }

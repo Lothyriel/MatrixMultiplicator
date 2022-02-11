@@ -5,25 +5,44 @@ using Domain.Matrices;
 using Domain.MatrixMultiplication;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace Tests
 {
     public class TDD
     {
+        public Matrix MatrixA { get; }
+        public Matrix MatrixB { get; }
+        public LocalMultiplicator Multiplicator { get; }
+
+        public static void MockFunc(int x, int y) { return; }
+        public static void MockFunc(TimeSpan t) { return; }
+        public static void MockFunc() { return; }
+
+        public TDD()
+        {
+            MatrixA = GetMatrixA();
+
+            MatrixB = GetMatrixB();
+            Multiplicator = new LocalMultiplicator(MatrixA, MatrixB)
+            {
+                ResultHandler = MockFunc,
+                ExitHandler = MockFunc
+            };
+        }
+
         [Test]
         public void ShouldMultiplyMatricesSingleThread()
         {
-            var matrixA = GetMatrixA();
-
-            var matrixB = GetMatrixB();
-
             var expectedMatrixResult = GetResultMatrix();
 
-            var resultMatrix = new LocalMultiplicator(matrixA, matrixB).MultiplySingleThreaded();
+            Multiplicator.MultiplySingleThreaded();
 
-            resultMatrix.X.Should().Be(matrixA.X);
-            resultMatrix.Y.Should().Be(matrixB.Y);
+            var resultMatrix = Multiplicator.Result!;
+
+            resultMatrix.X.Should().Be(MatrixA.X);
+            resultMatrix.Y.Should().Be(MatrixB.Y);
 
             for (int i = 0; i < resultMatrix.X; i++)
             {
@@ -34,16 +53,13 @@ namespace Tests
         [Test]
         public void ShouldMultiplyMatricesMultiThread()
         {
-            var matrixA = GetMatrixA();
-
-            var matrixB = GetMatrixB();
-
             var expectedMatrixResult = GetResultMatrix();
 
-            var resultMatrix = new LocalMultiplicator(matrixA, matrixB).MultiplyMultiThreaded();
+            Multiplicator.MultiplyMultiThreaded();
 
-            resultMatrix.X.Should().Be(matrixA.X);
-            resultMatrix.Y.Should().Be(matrixB.Y);
+            var resultMatrix = Multiplicator.Result!;
+            resultMatrix.X.Should().Be(MatrixA.X);
+            resultMatrix!.Y.Should().Be(MatrixB.Y);
 
             for (int i = 0; i < resultMatrix.X; i++)
             {
@@ -93,11 +109,11 @@ namespace Tests
 
             var expectedResult1 = new MultiplicationResult(0, 0, 10);
             user.Send(expectedResult1);
-            var result1 = TcpServer.ReceiveResult(data);
+            var result1 = TcpServer.ReceiveResult(data).Desserialize<MultiplicationResult>();
 
             var expectedResult2 = new MultiplicationResult(1, 1, 20);
             user.Send(expectedResult2);
-            var result2 = TcpServer.ReceiveResult(data);
+            var result2 = TcpServer.ReceiveResult(data).Desserialize<MultiplicationResult>();
 
             result1.Should().Be(expectedResult1);
             result2.Should().Be(expectedResult2);

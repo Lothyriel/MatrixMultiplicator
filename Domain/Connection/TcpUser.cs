@@ -11,7 +11,6 @@ namespace Domain.Connection
         public TcpUser(string ip, int port)
         {
             Client = new TcpClient(ip, port);
-
             Stream = Client.GetStream();
         }
         public TcpClient Client { get; }

@@ -1,8 +1,4 @@
-﻿using Domain.ExtensionMethods;
-using Newtonsoft.Json;
-using System.Text;
-
-namespace Domain.Connection
+﻿namespace Domain.Connection
 {
     public class ClientMatrixConnection
     {

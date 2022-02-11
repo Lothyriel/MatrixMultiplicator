@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientWindowsForms", "ClientWindowsForms\ClientWindowsForms.csproj", "{24B73802-6AC8-4433-B4DD-A82AAC81A262}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerWindowsForms.cs", "ServerWindowsForms\ServerWindowsForms.cs.csproj", "{4FDCA674-68D9-4790-B798-D6A1C84AEF1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerWindowsForms", "ServerWindowsForms\ServerWindowsForms.csproj", "{4FDCA674-68D9-4790-B798-D6A1C84AEF1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -12,9 +12,9 @@ namespace Tests
         {
             var distributedMultiplicator = new DistributedMultiplicatorSlave();
 
-            distributedMultiplicator.MatrixALines.Add(0, new List<double>() { 3, 2 });
+            distributedMultiplicator.MatrixALines[0] = new List<double>() { 3, 2 };
 
-            distributedMultiplicator.MatrixBColumns.Add(0, new List<double>() { 6, 0 });
+            distributedMultiplicator.MatrixBColumns[0] = new List<double>() { 6, 0 };
 
             var expectedResult = 18;
 

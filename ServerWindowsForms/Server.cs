@@ -1,4 +1,4 @@
-namespace ServerWindowsForms.cs
+namespace ServerWindowsForms
 {
     public partial class Server : Form
     {
@@ -7,7 +7,7 @@ namespace ServerWindowsForms.cs
         {
             Instance = this;
             InitializeComponent();
-            //OpenFormPanel();
+            OpenFormPanel(new StartView());
         }
         public void OpenFormPanel(Form panelForm)
         {

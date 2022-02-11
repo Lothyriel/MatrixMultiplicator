@@ -1,4 +1,4 @@
-namespace ServerWindowsForms.cs
+namespace ServerWindowsForms
 {
     internal static class Program
     {

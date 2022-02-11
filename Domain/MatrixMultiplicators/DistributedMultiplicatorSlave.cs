@@ -1,4 +1,6 @@
-﻿namespace Domain.MatrixMultiplication
+﻿using System.Collections.Concurrent;
+
+namespace Domain.MatrixMultiplication
 {
     public class DistributedMultiplicatorSlave
     {
@@ -8,8 +10,8 @@
             MatrixBColumns = new();
         }
 
-        public Dictionary<int , List<double>> MatrixALines { get; }
-        public Dictionary<int, List<double>> MatrixBColumns { get; }
+        public ConcurrentDictionary<int , List<double>> MatrixALines { get; }
+        public ConcurrentDictionary<int, List<double>> MatrixBColumns { get; }
 
         public double MultiplyLineByColumn(List<double>? line, int xM, List<double>? column, int yM)
         {

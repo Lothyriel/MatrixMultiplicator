@@ -1,5 +1,7 @@
 ﻿using Domain.Connection;
+using Domain.Exceptions;
 using Domain.MatrixMultiplicators;
+using System.Diagnostics;
 
 namespace Domain.Application
 {
@@ -9,22 +11,28 @@ namespace Domain.Application
         {
             MatrixConnection = new(ip, port);
             Multiplicator = multiplicator;
+            Handler = new();
         }
 
         public ServerMatrixConnection MatrixConnection { get; }
         public DistributedMultiplicatorMaster Multiplicator { get; set; }
 
-        public void Start() 
+        public UnstickHandler<MultiplicationResult> Handler { get; set; }
+
+        public void Start(Action<int, int> resultHandler) 
         {
-            StartReceivingConnections();
-            EndHandler();
+            StartReceivingConnections(resultHandler);
+            StartEndHandlerLoop();
         }
         public void StartSendingRequests()
         {
+            if (!Multiplicator.ClientsData.Any())
+                throw new NoClientsConnected();
+
             Multiplicator.SendMultiplicationRequests();
         }
 
-        private void StartReceivingConnections()
+        private void StartReceivingConnections(Action<int, int> resultHandler)
         {
             Task.Run(ReceivingLoop);
 
@@ -34,32 +42,39 @@ namespace Domain.Application
                 {
                     var clientData = MatrixConnection.ReceiveConnection();
                     Multiplicator.AddClientData(clientData);
-                    HandleClientResults(clientData);
+                    HandleClientResults(clientData, resultHandler);
                 }
             }
         }
-        private void HandleClientResults(ClientData clientData)
+        private void HandleClientResults(ClientData clientData, Action<int, int> resultHandler)
         {
             Task.Run(() => HandleLoop(clientData));
 
             void HandleLoop(ClientData clientData) 
             {
-                while (clientData is not null)
+                while (clientData.Client.Connected)
                 {
-                    var result = ServerMatrixConnection.ReceiveResult(clientData);
+                    var received = ServerMatrixConnection.ReceiveResult(clientData);
+                    Handler.Add(received);
+                    var result =  Handler.Next().Result;
+
+                    Debug.WriteLine($"Recebendo o resultado {result} {result.Xm} {result.Ym}");
+
+                    resultHandler(result.Xm, result.Ym);
                     Multiplicator.UpdateResult(result);
+                    Debug.WriteLine($"Atualizado o resultado {result} {result.Xm} {result.Ym}");
                 }
             }
         }
-        private void EndHandler()
+        private void StartEndHandlerLoop()
         {
             Task.Run(CheckLoop);
 
-            void CheckLoop()
+            async void CheckLoop()
             {
                 while (!Multiplicator.Ended())
                 {
-                    Thread.Sleep(3000);
+                    await Task.Delay(3000);
                 }
                 Multiplicator.CloseConnections();
             }

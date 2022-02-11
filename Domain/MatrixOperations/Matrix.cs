@@ -18,7 +18,7 @@ namespace Domain.Matrices
 
         public string SaveFile()
         {
-            var path = $"Matrix{X}x{Y}.txt";
+            var path = $"..\\..\\..\\..\\Matrix{X}x{Y}.txt";
             using var textWriter = new StreamWriter(path, false, Encoding.UTF8, 65536);
             textWriter.AutoFlush = true;
             for (int x = 0; x < X; x++)
@@ -26,9 +26,9 @@ namespace Domain.Matrices
                 var sb = new StringBuilder();
                 for (int y = 0; y < Y; y++)
                 {
-                    sb.Append($"{InnerMatrix[x][y].ToString("0.0000", CultureInfo.InvariantCulture)}{(Y == y ? "" : " ")}");
+                    sb.Append($"{InnerMatrix[x][y].ToString("0.0000", CultureInfo.InvariantCulture)}{(Y - 1 == y ? "" : " ")}");
                 }
-                textWriter.Write(X == x ? sb : sb.Append('\n'));
+                textWriter.Write(X - 1 == x ? sb : sb.Append(Environment.NewLine));
             }
             return path;
         }

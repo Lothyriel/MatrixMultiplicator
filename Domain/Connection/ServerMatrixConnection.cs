@@ -11,7 +11,11 @@
 
         public static void SendRequest(MultiplicationRequest data, ClientData clientData)
         {
-            TcpServer.SendMultiplicationRequest(data, clientData);
+            TcpServer.SendData(data, clientData);
+        }
+        public static void TerminateConnection(ClientData clientData) 
+        {
+            TcpServer.SendData("0", clientData);
         }
 
         public ClientData ReceiveConnection() 
@@ -19,7 +23,7 @@
             return Connection.ReceiveConnection();   
         }
 
-        public static MultiplicationResult ReceiveResult(ClientData client) 
+        public static string ReceiveResult(ClientData client) 
         {
             return TcpServer.ReceiveResult(client);
         }

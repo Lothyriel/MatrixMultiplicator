@@ -32,16 +32,19 @@ namespace Tests
 
             var master = new Master(new(matrixA, matrixB), ip, port);
 
-            var slave = new Slave(ip, port);
+            var slave = new Slave(ip, port)
+            {
+                ExitHandler = TDD.MockFunc
+            };
 
             master.Multiplicator.AddClientData(master.MatrixConnection.ReceiveConnection());
             var clientData = master.Multiplicator.GetNextClientData();
             master.Multiplicator.DistributedMultiplication(0, 0, clientData);
 
             var recevived = slave.MatrixConnection.Receive();
-            slave.SendResult(recevived.Desserialize<MultiplicationRequest>());
+            slave.HandleRequest(recevived.Desserialize<MultiplicationRequest>());
 
-            var result = ServerMatrixConnection.ReceiveResult(clientData);
+            var result = ServerMatrixConnection.ReceiveResult(clientData).Desserialize<MultiplicationResult>();
 
             master.Multiplicator.UpdateResult(result);
 

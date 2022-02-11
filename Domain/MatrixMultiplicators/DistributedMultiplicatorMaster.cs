@@ -1,6 +1,8 @@
 ﻿using Domain.Connection;
 using Domain.ExtensionMethods;
 using Domain.Matrices;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Domain.MatrixMultiplicators
 {
@@ -19,13 +21,13 @@ namespace Domain.MatrixMultiplicators
         }
         public double[,] Result { get; }
 
-        private List<ClientData> ClientsData { get; }
-        private Matrix MatrixA { get; }
-        private Matrix MatrixB { get; }
+        public List<ClientData> ClientsData { get; }
+        public Matrix MatrixA { get; }
+        public Matrix MatrixB { get; }
         private int ClientDataIndex { get; set; }
-        private Dictionary<ClientData, HashSet<int>> AlreadySentLines { get; }
-        private Dictionary<ClientData, HashSet<int>> AlreadySentColumns { get; }
-        private HashSet<(int, int)> AlreadyReceivedResults { get; }
+        private ConcurrentDictionary<ClientData, HashSet<int>> AlreadySentLines { get; }
+        private ConcurrentDictionary<ClientData, HashSet<int>> AlreadySentColumns { get; }
+        private ConcurrentDictionary<(int, int), byte> AlreadyReceivedResults { get; }
 
         private static readonly object Lock = new();  
 
@@ -40,6 +42,7 @@ namespace Domain.MatrixMultiplicators
 
             static void EndConnection(ClientData clientData)
             {
+                ServerMatrixConnection.TerminateConnection(clientData);
                 clientData.Client.Close();
                 clientData.Stream.Close();
             }
@@ -81,7 +84,7 @@ namespace Domain.MatrixMultiplicators
             var x = multiplicationResult.Xm;
             var y = multiplicationResult.Ym;
             Result[x, y] = multiplicationResult.Result;
-            AlreadyReceivedResults.Add((x, y));
+            AlreadyReceivedResults[(x, y)] = byte.MinValue;
         }
         public void DistributedMultiplication(int x, int y, ClientData clientData)
         {
@@ -105,7 +108,7 @@ namespace Domain.MatrixMultiplicators
 
                 AlreadySentColumns[clientData] = clientsColumns.AddAndReturn(y);
             }
-
+            Debug.WriteLine($"Enviando a request {x} {y}");
             ServerMatrixConnection.SendRequest(new MultiplicationRequest(line, x, column, y), clientData);
         }
 
